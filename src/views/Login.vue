@@ -9,7 +9,7 @@
               <button @click="login">
                   Entrar
               </button>
-              <button>
+              <button @click="register">
                   Registrar
               </button>
           </div>
@@ -19,6 +19,9 @@
 
 <script>
 import axios from 'axios'
+import { config } from 'dotenv'
+import { mapMutations } from 'vuex'
+config()
 export default {
   data: () => {
     return {
@@ -27,13 +30,21 @@ export default {
     }
   },
   methods: {
-    login () {
-      const response = axios.post(`${process.env.BASE_URL}/usuario/login`, {
+    register () {
+      this.$router.push({ name: 'Register' })
+    },
+    async login () {
+      const response = await axios.post(`${process.env.VUE_APP_API_URL}/usuario/login`, {
         email: this.email,
         senha: this.senha
       })
-      console.log(response)
-    }
+      this.setToken({ isLogged: true, token: response.data.token })
+      this.setPermissao(response.data.permissao)
+      this.$router.push({ name: 'Home' })
+    },
+    ...mapMutations([
+      'setToken', 'setPermissao'
+    ])
   }
 }
 </script>
