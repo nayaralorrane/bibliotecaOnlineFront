@@ -4,7 +4,7 @@
           <label for="email"></label>
           <input id="email" type="text" v-model="email">
           <label for="senha"></label>
-          <input id="senha" type="text" v-model="senha">
+          <input id="senha" type="password" v-model="senha">
           <div>
               <button @click="login">
                   Entrar
