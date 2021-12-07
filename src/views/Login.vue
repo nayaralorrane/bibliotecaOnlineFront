@@ -38,16 +38,34 @@ export default {
         email: this.email,
         senha: this.senha
       }).catch(error => {
-        this.$swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Email ou senha incorretos, tente novamente!'
-        })
-        throw error
+        console.log(JSON.stringify(error.message))
+        if (error.message.includes('Usuário não existente')) {
+          this.$swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Email não existente, tente novamente!'
+          })
+          throw error
+        } else {
+          this.$swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Email ou senha incorretos, tente novamente!'
+          })
+          throw error
+        }
       })
-      this.setToken({ isLogged: true, token: response.data.token })
-      this.setPermissao(response.data.permissao)
-      this.$router.push({ name: 'Home' })
+
+      this.$swal.fire({
+        icon: 'success',
+        title: 'Login Aprovado',
+        text: `Bem vindo ${response.data.permissao === 'ROLE_CLIENTE' ? 'cliente' : 'funcionário'} ${response.data.nome}`,
+        confirmButtonText: 'Ok'
+      }).then(result => {
+        this.setToken({ isLogged: true, token: response.data.token })
+        this.setPermissao(response.data.permissao)
+        this.$router.push({ name: 'Home' })
+      })
     },
     ...mapMutations([
       'setToken', 'setPermissao'
