@@ -30,17 +30,31 @@ export default {
     async search () {
       const response = await axios.post(`${process.env.VUE_APP_API_URL}/livro/search/categoria`, {
         search: this.nome
+      }).catch(error => {
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Ocorreu um erro ao tentar pesquisar livros, tente novamente!'
+        })
+        throw error
       })
-      this.items = response.data.map(item => {
-        return {
-          Título: item.nomeTitulo,
-          Editora: item.editora,
-          Preço: item.preco,
-          Estante: item.sessao.estante,
-          Sessão: item.sessao.nomeSessao,
-          Biblioteca: item.sessao.biblioteca.nomeBiblioteca
-        }
-      })
+      if (response.data.length > 0) {
+        this.items = response.data.map(item => {
+          return {
+            Título: item.nomeTitulo,
+            Editora: item.editora,
+            Preço: item.preco,
+            Estante: item.sessao.estante,
+            Sessão: item.sessao.nomeSessao,
+            Biblioteca: item.sessao.biblioteca.nomeBiblioteca
+          }
+        })
+      } else {
+        this.$swal.fire({
+          icon: 'info',
+          title: 'Nenhum livro encontrado'
+        })
+      }
     }
   }
 }

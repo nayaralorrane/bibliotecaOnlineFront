@@ -37,6 +37,13 @@ export default {
       const response = await axios.post(`${process.env.VUE_APP_API_URL}/usuario/login`, {
         email: this.email,
         senha: this.senha
+      }).catch(error => {
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Email ou senha incorretos, tente novamente!'
+        })
+        throw error
       })
       this.setToken({ isLogged: true, token: response.data.token })
       this.setPermissao(response.data.permissao)

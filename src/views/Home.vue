@@ -28,7 +28,14 @@ export default {
   },
   methods: {
     async fillTable () {
-      const response = await axios.get(`${process.env.VUE_APP_API_URL}/livro/`)
+      const response = await axios.get(`${process.env.VUE_APP_API_URL}/livro/`).catch(error => {
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Não foi possível encontrar livros, tente novamente mais tarde!'
+        })
+        throw error
+      })
       this.items = response.data.map(item => {
         return {
           Título: item.nomeTitulo,

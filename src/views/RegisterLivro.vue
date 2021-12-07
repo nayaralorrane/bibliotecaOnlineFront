@@ -50,7 +50,7 @@
           </ul>
         </div>
         <div class="d-flex flex-row justify-content-center">
-          <b-button class="rounded-3 m-2 mt-4 w-25" @click="register">cadastrar</b-button>
+          <b-button class="rounded-3 m-2 mt-4 w-25" @click="register">Cadastrar</b-button>
         </div>
         <div class="m-4 tabela-pai">
               <b-table class="tabela" striped hover :items="items"></b-table>
@@ -66,6 +66,7 @@ import axios from 'axios'
 export default {
   mounted () {
     this.fillBiblioteca()
+    this.fillTable()
   },
   data: () => {
     return {
@@ -75,10 +76,7 @@ export default {
       autor: '',
       biblioteca: '',
       items: [],
-      bibliotecaList: [{
-        title: 'teste',
-        sessoes: [{ value: 2, title: 'sessao' }]
-      }],
+      bibliotecaList: [],
       sessaoList: [],
       sessao: '',
       categoria: '',
@@ -87,20 +85,35 @@ export default {
   },
   methods: {
     async fillBiblioteca () {
-      const response = await axios.get(`${process.env.VUE_APP_API_URL}/biblioteca/`)
-      this.options = response.data.map(item => {
-        return {
-          value: item.id,
-          title: item.nomeBiblioteca,
-          sessoes: item.sessoes
-        }
+      const response = await axios.get(`${process.env.VUE_APP_API_URL}/biblioteca/`).catch(error => {
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Ocorreu um erro ao tentar pesquisar as bibliotecas, cadastre ao menos uma biblioteca!'
+        })
+        throw error
       })
+      if (response.data.length > 0) {
+        this.bibliotecaList = response.data.map(item => {
+          return {
+            value: item.idBiblioteca,
+            title: item.nomeBiblioteca,
+            sessoes: item.sessoes
+          }
+        })
+      } else {
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Ocorreu um erro ao tentar pesquisar as bibliotecas, cadastre ao menos uma biblioteca!'
+        })
+      }
     },
     changeSessao () {
       this.sessaoList = this.biblioteca.sessoes.map(item => {
         return {
-          value: item.value,
-          title: item.title
+          value: item.nomeSessao,
+          title: item.nomeSessao
         }
       })
     },
@@ -111,9 +124,62 @@ export default {
     removeCategory (value) {
       this.categories = this.categories.filter(item => item !== value)
     },
+    async fillTable () {
+      const response = await axios.get(`${process.env.VUE_APP_API_URL}/livro/`).catch(error => {
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Não foi possível encontrar livros, tente novamente mais tarde!'
+        })
+        throw error
+      })
+      this.items = response.data.map(item => {
+        return {
+          Título: item.nomeTitulo,
+          Preço: item.preco,
+          Editora: item.editora
+        }
+      })
+    },
     async register () {
-      const response = await axios.post(`${process.env.VUE_APP_API_URL}/livro/register/`)
-      console.log(response)
+      if (!this.categories.length || !this.nomeTitulo || !this.editora || !this.preco || !this.autor || !this.sessao) {
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Campos vazios',
+          text: 'Algum dos campos estão vazios!'
+        })
+        return null
+      }
+
+      const data = {
+        categorias: this.categories,
+        livro: {
+          nomeTitulo: this.nomeTitulo,
+          editora: this.editora,
+          preco: this.preco
+        },
+        autor: {
+          autNome: this.autor
+        },
+        sessao: {
+          nomeSessao: this.sessao.value
+        }
+      }
+      await axios.post(`${process.env.VUE_APP_API_URL}/livro/register`, data).catch(error => {
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Ocorreu algum erro ao criar o livro, tente novamente!'
+        })
+        throw error
+      })
+      this.fillTable()
+      this.categories = []
+      this.nomeTitulo = ''
+      this.editora = ''
+      this.preco = ''
+      this.autor = ''
+      this.sessao = {}
     }
   }
 }
