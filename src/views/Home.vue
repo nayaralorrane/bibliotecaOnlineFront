@@ -2,7 +2,6 @@
     <div class="d-flex flex-column align-items-center">
         <b-button-group class="w-75 d-flex flex-row justify-content-center text-center" v-if="this.$store.state.permissao === 'ROLE_FUNCIONARIO'">
             <b-button class="m-3 rounded-3" @click="() => this.$router.push({ name: 'CadastroLivro'})">Cadastrar Novo Livro</b-button>
-            <b-button class="m-3 rounded-3" @click="() => this.$router.push({ name: 'CadastroBiblioteca'})">Cadastrar Biblioteca</b-button>
         </b-button-group>
         <b-button-group class="w-75 d-flex flex-row justify-content-center text-center m-1 border-1">
             <b-button class="m-3 rounded-3" @click="() => this.$router.push({ name: 'ConsultarLivro'})">Consultar Livro</b-button>

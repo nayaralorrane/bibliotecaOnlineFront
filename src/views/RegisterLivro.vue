@@ -63,7 +63,13 @@
 
 <script>
 import axios from 'axios'
+import { mapGetters } from 'vuex'
 export default {
+  beforeMount () {
+    if (this.getPermissao === 'ROLE_CLIENTE') {
+      this.$router.push({ name: 'Home' })
+    }
+  },
   mounted () {
     this.fillBiblioteca()
     this.fillTable()
@@ -82,6 +88,11 @@ export default {
       categoria: '',
       categories: []
     }
+  },
+  computed: {
+    ...mapGetters([
+      'getPermissao'
+    ])
   },
   methods: {
     async fillBiblioteca () {

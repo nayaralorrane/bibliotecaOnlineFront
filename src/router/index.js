@@ -27,11 +27,6 @@ const routes = [
     component: () => import('../views/RegisterLivro.vue')
   },
   {
-    path: '/biblioteca/register',
-    name: 'CadastroBiblioteca',
-    component: () => import('../views/RegisterBiblioteca.vue')
-  },
-  {
     path: '/livro/consult',
     name: 'ConsultarLivro',
     component: () => import('../views/SearchLivro.vue')
@@ -55,7 +50,11 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (store.state.isLogged) axios.defaults.headers.common.Authorization = `Bearer ${store.state.token}`
+  if (store.state.isLogged) {
+    axios.defaults.headers.common.Authorization = `Bearer ${store.state.token}`
+  } else {
+    delete axios.defaults.headers.common.Authorization
+  }
   if (!store.state.token) {
     if (to.name === 'Login' || to.name === 'Register') {
       next()

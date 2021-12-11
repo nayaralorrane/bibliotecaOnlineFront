@@ -38,22 +38,13 @@ export default {
         email: this.email,
         senha: this.senha
       }).catch(error => {
-        console.log(JSON.stringify(error.message))
-        if (error.message.includes('Usuário não existente')) {
-          this.$swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Email não existente, tente novamente!'
-          })
-          throw error
-        } else {
-          this.$swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Email ou senha incorretos, tente novamente!'
-          })
-          throw error
-        }
+        // SweetAlert
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: error.response.data.message
+        })
+        throw error
       })
 
       this.$swal.fire({
